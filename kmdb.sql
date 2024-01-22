@@ -106,12 +106,97 @@
 -- Drop existing tables, so you'll start fresh each time this script is run.
 -- TODO!
 
+DROP TABLE IF EXISTS Roles;
+DROP TABLE IF EXISTS Actors;
+DROP TABLE IF EXISTS Movies;
+DROP TABLE IF EXISTS Studios;
+
 -- Create new tables, according to your domain model
 -- TODO!
+
+
+
+-- Create Studios table
+CREATE TABLE Studios (
+    StudioID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL,
+    Location TEXT
+);
+
+-- Create Movies table
+CREATE TABLE Movies (
+    MovieID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Title TEXT NOT NULL,
+    YearReleased INTEGER NOT NULL,
+    MPAARating TEXT NOT NULL,
+    StudioID INTEGER,
+    FOREIGN KEY (StudioID) REFERENCES Studios(StudioID)
+);
+
+-- Create Actors table
+CREATE TABLE Actors (
+    ActorID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL,
+    DateOfBirth TEXT,
+    Nationality TEXT
+);
+
+-- Create Roles table
+CREATE TABLE Roles (
+    RoleID INTEGER PRIMARY KEY AUTOINCREMENT,
+    MovieID INTEGER,
+    ActorID INTEGER,
+    CharacterName TEXT NOT NULL,
+    FOREIGN KEY (MovieID) REFERENCES Movies(MovieID),
+    FOREIGN KEY (ActorID) REFERENCES Actors(ActorID)
+);
 
 -- Insert data into your database that reflects the sample data shown above
 -- Use hard-coded foreign key IDs when necessary
 -- TODO!
+
+-- Insert data into Studios
+INSERT INTO Studios (StudioID, Name, Location) VALUES 
+(1, 'Warner Bros.', 'Burbank, California');
+
+-- Insert data into Movies
+INSERT INTO Movies (MovieID, Title, YearReleased, MPAARating, StudioID) VALUES 
+(1, 'Batman Begins', 2005, 'PG-13', 1),
+(2, 'The Dark Knight', 2008, 'PG-13', 1),
+(3, 'The Dark Knight Rises', 2012, 'PG-13', 1);
+
+-- Insert data into Actors
+INSERT INTO Actors (ActorID, Name, DateOfBirth, Nationality) VALUES 
+(1, 'Christian Bale', '1974-01-30', 'British'),
+(2, 'Michael Caine', '1933-03-14', 'British'),
+(3, 'Liam Neeson', '1952-06-07', 'Irish'),
+(4, 'Katie Holmes', '1978-12-18', 'American'),
+(5, 'Gary Oldman', '1958-03-21', 'British'),
+(6, 'Heath Ledger', '1979-04-04', 'Australian'),
+(7, 'Aaron Eckhart', '1968-03-12', 'American'),
+(8, 'Maggie Gyllenhaal', '1977-11-16', 'American'),
+(9, 'Tom Hardy', '1977-09-15', 'British'),
+(10, 'Joseph Gordon-Levitt', '1981-02-17', 'American'),
+(11, 'Anne Hathaway', '1982-11-12', 'American');
+
+-- Insert data into Roles
+INSERT INTO Roles (RoleID, MovieID, ActorID, CharacterName) VALUES 
+(1, 1, 1, 'Bruce Wayne'),
+(2, 1, 2, 'Alfred'),
+(3, 1, 3, 'Ra''s Al Ghul'),
+(4, 1, 4, 'Rachel Dawes'),
+(5, 1, 5, 'Commissioner Gordon'),
+(6, 2, 1, 'Bruce Wayne'),
+(7, 2, 6, 'Joker'),
+(8, 2, 7, 'Harvey Dent'),
+(9, 2, 2, 'Alfred'),
+(10, 2, 8, 'Rachel Dawes'),
+(11, 3, 1, 'Bruce Wayne'),
+(12, 3, 5, 'Commissioner Gordon'),
+(13, 3, 9, 'Bane'),
+(14, 3, 10, 'John Blake'),
+(15, 3, 11, 'Selina Kyle');
+
 
 -- Prints a header for the movies output
 .print "Movies"
@@ -121,12 +206,21 @@
 -- The SQL statement for the movies output
 -- TODO!
 
--- Prints a header for the cast output
+SELECT M.Title, M.YearReleased, M.MPAARating, S.Name AS StudioName
+FROM Movies M
+JOIN Studios S ON M.StudioID = S.StudioID;
+
+-- Prints a header for the roles output
 .print ""
-.print "Top Cast"
+.print "Roles"
 .print "========"
 .print ""
 
-
--- The SQL statement for the cast output
+-- The SQL statement for the roless output
 -- TODO!
+
+SELECT M.Title, A.Name AS ActorName, R.CharacterName
+FROM Roles R
+JOIN Movies M ON R.MovieID = M.MovieID
+JOIN Actors A ON R.ActorID = A.ActorID
+ORDER BY M.Title, A.Name;
